@@ -1,7 +1,6 @@
 package com.demo.kuanyi.todolist.list;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.demo.kuanyi.todolist.AbstractToDoFragment;
 import com.demo.kuanyi.todolist.R;
 
 
@@ -16,10 +16,7 @@ import com.demo.kuanyi.todolist.R;
  *
  * A placeholder fragment containing a simple view.
  */
-public class ToDoListFragment extends Fragment {
-
-    public ToDoListFragment() {
-    }
+public class ToDoListFragment extends AbstractToDoFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
