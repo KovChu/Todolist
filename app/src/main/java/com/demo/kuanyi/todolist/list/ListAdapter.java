@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.demo.kuanyi.todolist.R;
 import com.demo.kuanyi.todolist.Utils;
+import com.demo.kuanyi.todolist.model.DataHelper;
 import com.demo.kuanyi.todolist.model.ListItemTable;
 import com.twotoasters.android.support.v7.widget.RecyclerView;
 
@@ -52,9 +53,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         notifyAdapterSizeChange();
     }
 
+    public void removeAllItems() {
+        mListItemTableList.clear();
+        notifyDataSetChanged();
+    }
+
     public void changeItem(ListItemTable itemTable){
         int position = mListItemTableList.indexOf(itemTable);
         notifyItemChanged(position);
+    }
+
+    public void markAllAsRead() {
+        DataHelper helper = Utils.getDataHelper();
+        for(ListItemTable itemTable : mListItemTableList) {
+            itemTable.setIsComplete(true);
+            helper.createOrUpdateListItem(itemTable);
+        }
+        notifyDataSetChanged();
     }
 
     @Override

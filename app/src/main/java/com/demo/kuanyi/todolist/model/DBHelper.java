@@ -78,4 +78,11 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
         return listItemTable;
     }
 
+    public void clearListItemTable() {
+        try {
+            TableUtils.clearTable(getConnectionSource(), ListItemTable.class);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

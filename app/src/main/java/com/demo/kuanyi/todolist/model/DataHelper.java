@@ -36,6 +36,10 @@ public class DataHelper {
         }
     }
 
+    public void clearAllItem() {
+        mDBHelper.clearListItemTable();
+    }
+
 
     public List<ListItemTable> queryForAllListItems() {
         try {

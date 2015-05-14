@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">TODOList</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_add">Add</string>
     <string name="add_item_hint">Press + on top right corner to add new item</string>
     <string name="add_new_list_title">Create a new TODO item</string>
     <string name="add_new_list_description">Please enter the title of the item</string>
+
+    <!-- menu items -->
+    <string name="action_add">Add</string>
+    <string name="action_mark_all_as_complete">Mark All As Complete</string>
+    <string name="action_remove_all">Remove All Items</string>
 </resources>
