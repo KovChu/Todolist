@@ -7,7 +7,7 @@ in mind for user to easily create/delete items, and filter the completed tasks t
 Function Specs:
 An TODO item is created when the user press + on the action bar.
 Click on the item will mark it as complete, while long-click will delete the item.
-the menu also contains filter, mark-all-as-complete, and remove all items functionality.
+the menu also contains filter, mark-all-as-complete, mark-all-as-incomplete, and remove all items functionality.
 
 3rd Party Libraries used:
 

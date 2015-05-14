@@ -87,46 +87,50 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
-            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-            alertDialog.setTitle(getString(R.string.add_new_list_title));
-            alertDialog.setMessage(getString(R.string.add_new_list_description));
-            final EditText input = new EditText(getActivity());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            input.setLayoutParams(lp);
-            alertDialog.setView(input); // uncomment this line
-            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    //create a new list item and display
-                    ListItemTable newListItemTable = new ListItemTable();
-                    newListItemTable.setTitle(input.getText().toString());
-                    Utils.getDataHelper().createOrUpdateListItem(newListItemTable);
-                    mListAdapter.addNewListItem(newListItemTable);
+        switch (id) {
+            case R.id.action_add:
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setTitle(getString(R.string.add_new_list_title));
+                alertDialog.setMessage(getString(R.string.add_new_list_description));
+                final EditText input = new EditText(getActivity());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                alertDialog.setView(input); // uncomment this line
+                alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //create a new list item and display
+                        ListItemTable newListItemTable = new ListItemTable();
+                        newListItemTable.setTitle(input.getText().toString());
+                        Utils.getDataHelper().createOrUpdateListItem(newListItemTable);
+                        mListAdapter.addNewListItem(newListItemTable);
+                    }
+                });
+                alertDialog.show();
+                return true;
+            case R.id.action_mark_all_as_complete:
+                mListAdapter.markAllAsComplete(true);
+                return true;
+            case R.id.action_mark_all_as_incomplete:
+                mListAdapter.markAllAsComplete(false);
+                return true;
+            case R.id.action_remove_all:
+                mListAdapter.removeAllItems();
+                Utils.getDataHelper().clearAllItem();
+                displayHint();
+                return true;
+            case R.id.action_filter:
+                //change the icon whe
+                if(isFilter) {
+                    item.setIcon(R.drawable.uncheck);
+                }else {
+                    item.setIcon(R.drawable.check);
                 }
-            });
-            alertDialog.show();
-            return true;
-        }else if(id == R.id.action_mark_all_as_read) {
-            mListAdapter.markAllAsComplete();
-            return true;
-        }else if(id == R.id.action_remove_all) {
-            mListAdapter.removeAllItems();
-            Utils.getDataHelper().clearAllItem();
-            displayHint();
-            return true;
-        }else if(id == R.id.action_filter_complete) {
-            //change the icon whe
-            if(isFilter) {
-                item.setIcon(R.drawable.uncheck);
-            }else {
-                item.setIcon(R.drawable.check);
-            }
-            isFilter = !isFilter;
-            mListAdapter.filterComplete();
-            return true;
+                isFilter = !isFilter;
+                mListAdapter.filterData(true);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

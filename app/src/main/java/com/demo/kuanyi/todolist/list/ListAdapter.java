@@ -74,7 +74,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
     }
 
     /**
-     * remvoe all items from the list
+     * remove all items from the list
      */
     public void removeAllItems() {
         mAllListItemTableList.clear();
@@ -89,16 +89,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
     }
 
     /**
-     * mark every item as complete
+     * mark every item as complete or incomplete
+     * @param complete flags for marking the data
      */
-    public void markAllAsComplete() {
+    public void markAllAsComplete(boolean complete) {
         DataHelper helper = Utils.getDataHelper();
-        for(ListItemTable itemTable : mDisplayingItemTableList) {
-            itemTable.setIsComplete(true);
+        for(ListItemTable itemTable : mAllListItemTableList) {
+            itemTable.setIsComplete(complete);
             //update the data in the database
             helper.createOrUpdateListItem(itemTable);
         }
-        notifyDataSetChanged();
+        filterData(false);
     }
 
     @Override
@@ -158,9 +159,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         return mDisplayingItemTableList.size();
     }
 
-    public void filterComplete() {
+    public void filterData(boolean change) {
         mDisplayingItemTableList = new ArrayList<>();
-        if(!isFiltered) {
+        if(change) {
+            //revert the isFilter flag
+            isFiltered = !isFiltered;
+        }
+        if(isFiltered) {
             for (ListItemTable itemTable : mAllListItemTableList) {
                 if(!itemTable.isComplete()) {
                     //only add the incomplete item to the list
@@ -171,8 +176,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
             //add all items to the list
             mDisplayingItemTableList.addAll(mAllListItemTableList);
         }
-        //revert the isFilter flag
-        isFiltered = !isFiltered;
         notifyDataSetChanged();
     }
 }
