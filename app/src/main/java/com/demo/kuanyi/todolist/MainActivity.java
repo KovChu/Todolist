@@ -3,7 +3,6 @@ package com.demo.kuanyi.todolist;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
-import com.demo.kuanyi.todolist.detail.ToDoListDetailFragment;
 import com.demo.kuanyi.todolist.list.ToDoListFragment;
 import com.demo.kuanyi.todolist.model.DataHelper;
 
@@ -31,19 +30,8 @@ public class MainActivity extends ActionBarActivity {
         return mDataHelper;
     }
 
-    public void openDetailFragment(String listTitle, int listId) {
-        getFragmentManager().
-                beginTransaction().
-                add(R.id.container,
-                ToDoListDetailFragment.newInstance(listId)).
-                commit();
-        setTitle(listTitle);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(getFragmentManager().findFragmentByTag("FRAGMENT_LIST_DETAIL") != null) {
-            setTitle("ToDoList");
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        mDataHelper.close();
     }
 }

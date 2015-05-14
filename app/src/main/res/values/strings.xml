@@ -1,11 +1,7 @@
 <resources>
-    <string name="app_name">TodoList</string>
+    <string name="app_name">TODOList</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="action_add">Add</string>
-    <string name="add_new_list_title">Create a new list</string>
-    <string name="add_new_list_description">Please enter the title of the list</string>
-
-    <string name="add_new_item_title">Create a new item</string>
-    <string name="add_new_item_description">Please enter the ToDo</string>
+    <string name="add_new_list_title">Create a new TODO item</string>
+    <string name="add_new_list_description">Please enter the title of the item</string>
 </resources>

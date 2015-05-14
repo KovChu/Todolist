@@ -18,7 +18,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "todolist.db";
     private static final int DATABASE_VERSION = 1;
     private Dao<ListItemTable, Integer> listItemTable = null;
-    private Dao<DetailItemTable, Integer> detailItemTable = null;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +39,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable(connectionSource, ListItemTable.class);
-            TableUtils.createTable(connectionSource, DetailItemTable.class);
         } catch (SQLException e) {
             Log.e(DBHelper.class.getName(), "Create Fail", e);
             e.printStackTrace();
@@ -71,7 +69,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public void close() {
         super.close();
         listItemTable = null;
-        detailItemTable = null;
     }
 
     public Dao<ListItemTable, Integer> getListItemTable() throws SQLException {
@@ -79,13 +76,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
             listItemTable = getDao(ListItemTable.class);
         }
         return listItemTable;
-    }
-
-    public Dao<DetailItemTable, Integer> getDetailItemTable() throws SQLException {
-        if (detailItemTable == null) {
-            detailItemTable = getDao(DetailItemTable.class);
-        }
-        return detailItemTable;
     }
 
 }

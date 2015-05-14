@@ -98,7 +98,13 @@ public class ListAdapter extends BaseAdapter {
         }else {
             holder = (ListItemHolder) convertView.getTag();
         }
-        holder.title.setText(getItem(position).getTitle());
+        ListItemTable itemTable = getItem(position);
+        if(itemTable.isComplete()) {
+            holder.title.setBackgroundResource(R.color.complete);
+        }else {
+            holder.title.setBackgroundResource(R.color.transparent);
+        }
+        holder.title.setText(itemTable.getTitle());
         return convertView;
     }
 

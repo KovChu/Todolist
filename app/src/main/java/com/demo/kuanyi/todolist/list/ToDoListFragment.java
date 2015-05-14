@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.demo.kuanyi.todolist.AbstractToDoFragment;
-import com.demo.kuanyi.todolist.MainActivity;
 import com.demo.kuanyi.todolist.R;
 import com.demo.kuanyi.todolist.model.ListItemTable;
 
@@ -48,7 +47,8 @@ public class ToDoListFragment extends AbstractToDoFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //when click, open up the list detail for that item;
                 ListItemTable itemTable = mListAdapter.getItem(position);
-                MainActivity activity = checkActivity();
+                itemTable.setIsComplete(!itemTable.isComplete());
+                mListAdapter.notifyDataSetChanged();
 
             }
         });
@@ -100,14 +100,14 @@ public class ToDoListFragment extends AbstractToDoFragment {
         if (id == R.id.action_add) {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
             alertDialog.setTitle(getString(R.string.add_new_list_title));
-            alertDialog.setMessage(getString(R.string.add_new_list_title));
+            alertDialog.setMessage(getString(R.string.add_new_list_description));
             final EditText input = new EditText(getActivity());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
             alertDialog.setView(input); // uncomment this line
-            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     //create a new list item and display

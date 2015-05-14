@@ -18,6 +18,9 @@ public class ListItemTable {
     @DatabaseField
     private String title;
 
+    @DatabaseField
+    private boolean isComplete;
+
     public ListItemTable() {
 
     }
@@ -38,4 +41,11 @@ public class ListItemTable {
         this.title = title;
     }
 
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(boolean isComplete) {
+        this.isComplete = isComplete;
+    }
 }

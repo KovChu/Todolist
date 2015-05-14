@@ -27,15 +27,6 @@ public class DataHelper {
         }
         return false;
     }
-    public boolean createOrUpdateDetailItem(DetailItemTable listItemTable) {
-        try {
-            mDBHelper.getDetailItemTable().createOrUpdate(listItemTable);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public void removeListItem(int id) {
         try {
@@ -53,15 +44,6 @@ public class DataHelper {
             e.printStackTrace();
         }
 
-        return null;
-    }
-
-    public List<DetailItemTable> queryForAllDetailItems(String listId) {
-        try {
-            return mDBHelper.getDetailItemTable().queryForEq("listId", listId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         return null;
     }
 
