@@ -7,11 +7,11 @@ import com.j256.ormlite.table.DatabaseTable;
  * The detail item table that holds the data.
  * Created by kuanyi on 15/5/14.
  */
-@DatabaseTable(tableName = "DetailItemTable")
+@DatabaseTable(tableName = "detailItemTable")
 public class DetailItemTable {
 
     //the ID of the list item, it is auto-generated, so it cannot be set
-    @DatabaseField(id = true, canBeNull = false, generatedId = true)
+    @DatabaseField(generatedId = true)
     private int id;
 
     //the title or description of the item
@@ -25,6 +25,10 @@ public class DetailItemTable {
     //whether the item is complete
     @DatabaseField
     private boolean complete;
+
+    public DetailItemTable() {
+
+    }
 
     public int getId() {
         return id;

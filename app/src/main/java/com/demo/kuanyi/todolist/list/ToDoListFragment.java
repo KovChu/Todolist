@@ -1,15 +1,26 @@
 package com.demo.kuanyi.todolist.list;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.demo.kuanyi.todolist.AbstractToDoFragment;
+import com.demo.kuanyi.todolist.MainActivity;
 import com.demo.kuanyi.todolist.R;
+import com.demo.kuanyi.todolist.model.ListItemTable;
+
+import java.util.ArrayList;
 
 
 /**
@@ -18,15 +29,59 @@ import com.demo.kuanyi.todolist.R;
  */
 public class ToDoListFragment extends AbstractToDoFragment {
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    private static final int LOAD_LIST_DATA_COMPLETE = 0;
+
+    private ListView mListView = null;
+    private ListAdapter mListAdapter = null;
+
+    public static ToDoListFragment newInstance() {
+        return new ToDoListFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View parentView = inflater.inflate(R.layout.fragment_list, container, false);
+        mListView = (ListView) parentView.findViewById(R.id.listview);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //when click, open up the list detail for that item;
+                ListItemTable itemTable = mListAdapter.getItem(position);
+                MainActivity activity = checkActivity();
+
+            }
+        });
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //remove the item when long click
+                ListItemTable itemTable = mListAdapter.getItem(position);
+                getDataHelper().removeListItem(itemTable.getId());
+                mListAdapter.removeItem(position);
+                return true;
+            }
+        });
+        return parentView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<ListItemTable> existingList = (ArrayList<ListItemTable>) getDataHelper().queryForAllListItems();
+                if(existingList == null) {
+                    existingList = new ArrayList<ListItemTable>();
+                }
+                Message message = new Message();
+                message.what = LOAD_LIST_DATA_COMPLETE;
+                message.obj = existingList;
+                mHandler.dispatchMessage(message);
+            }
+        };
+        new Thread(runnable).start();
     }
 
     @Override
@@ -43,11 +98,39 @@ public class ToDoListFragment extends AbstractToDoFragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
+            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+            alertDialog.setTitle(getString(R.string.add_new_list_title));
+            alertDialog.setMessage(getString(R.string.add_new_list_title));
+            final EditText input = new EditText(getActivity());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            alertDialog.setView(input); // uncomment this line
+            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    //create a new list item and display
+                    ListItemTable newListItemTable = new ListItemTable();
+                    newListItemTable.setTitle(input.getText().toString());
+                    getDataHelper().createOrUpdateListItem(newListItemTable);
+                    mListAdapter.addNewListItem(newListItemTable);
+                }
+            });
+            alertDialog.show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    public boolean handleMessage(Message msg) {
+        if(msg.what == LOAD_LIST_DATA_COMPLETE) {
+            ArrayList<ListItemTable> listItemTables = (ArrayList<ListItemTable>) msg.obj;
+            mListAdapter = new ListAdapter(getActivity(), listItemTables);
+            mListView.setAdapter(mListAdapter);
+        }
+        return false;
+    }
 }

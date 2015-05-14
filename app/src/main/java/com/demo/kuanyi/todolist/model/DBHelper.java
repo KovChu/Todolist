@@ -15,8 +15,8 @@ import java.sql.SQLException;
  * Created by kuanyi on 15/5/14.
  */
 public class DBHelper extends OrmLiteSqliteOpenHelper {
-    private static final String DATABASE_NAME = "ToDoList.db";
-    private static final int DATABASE_VERSION = 0;
+    private static final String DATABASE_NAME = "todolist.db";
+    private static final int DATABASE_VERSION = 1;
     private Dao<ListItemTable, Integer> listItemTable = null;
     private Dao<DetailItemTable, Integer> detailItemTable = null;
 

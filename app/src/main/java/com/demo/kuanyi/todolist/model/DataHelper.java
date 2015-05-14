@@ -1,7 +1,6 @@
 package com.demo.kuanyi.todolist.model;
 
 import android.content.Context;
-import android.os.Handler;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
@@ -14,7 +13,7 @@ import java.util.List;
 public class DataHelper {
     private DBHelper mDBHelper;
 
-    public DataHelper(Context context, Handler handler){
+    public DataHelper(Context context){
         mDBHelper = OpenHelperManager.getHelper(context, DBHelper.class);
     }
 
@@ -36,6 +35,14 @@ public class DataHelper {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void removeListItem(int id) {
+        try {
+            mDBHelper.getListItemTable().deleteById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 

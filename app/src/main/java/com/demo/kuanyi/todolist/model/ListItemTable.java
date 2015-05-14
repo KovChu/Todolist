@@ -7,16 +7,20 @@ import com.j256.ormlite.table.DatabaseTable;
  * Created by kuanyi on 15/5/14.
  */
 
-@DatabaseTable(tableName = "ListItemTable")
+@DatabaseTable(tableName = "listItemTable")
 public class ListItemTable {
 
     //the ID of the list item, it is auto-generated, so it cannot be set
-    @DatabaseField(id = true, canBeNull = false, generatedId = true)
+    @DatabaseField(generatedId = true)
     private int id;
 
     //the title or description of the item
     @DatabaseField
     private String title;
+
+    public ListItemTable() {
+
+    }
 
     public int getId() {
         return id;
