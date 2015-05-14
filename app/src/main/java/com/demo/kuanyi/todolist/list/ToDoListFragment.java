@@ -110,7 +110,7 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
             alertDialog.show();
             return true;
         }else if(id == R.id.action_mark_all_as_read) {
-            mListAdapter.markAllAsRead();
+            mListAdapter.markAllAsComplete();
             return true;
         }else if(id == R.id.action_remove_all) {
             mListAdapter.removeAllItems();

@@ -12,6 +12,8 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 /**
+ * The custom OrmLiteSqliteOpenHelper to initiate the database and holds reference
+ * to the daos for actions.
  * Created by kuanyi on 15/5/14.
  */
 public class DBHelper extends OrmLiteSqliteOpenHelper {

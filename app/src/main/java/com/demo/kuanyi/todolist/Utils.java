@@ -5,6 +5,8 @@ import android.content.Context;
 import com.demo.kuanyi.todolist.model.DataHelper;
 
 /**
+ * The Utils class that holds the reference to a singleton DataHelper class
+ * for easy retrieve for classes across the application.
  * Created by kuanyi on 15/5/14.
  */
 public class Utils {

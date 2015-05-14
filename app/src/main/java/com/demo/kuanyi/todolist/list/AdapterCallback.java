@@ -8,7 +8,7 @@ public interface AdapterCallback {
 
     /**
      * receive notification when the size of the adapter has change
-     * @param size
+     * @param size the size of the adapter after the change
      */
     void onAdapterItemSizeChange(int size);
 }

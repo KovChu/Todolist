@@ -21,10 +21,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     private ArrayList<ListItemTable> mAllListItemTableList = null;
 
+    //the list of the current display list, this will be the same with
+    //mAllListItemTableList when the filter is not applied
     private ArrayList<ListItemTable> mDisplayingItemTableList = null;
 
+    //the callback for communicating with fragment
     private AdapterCallback mAdapterCallback;
 
+    //whether the list is filtered or not
     private boolean isFiltered = false;
 
 
@@ -39,6 +43,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         mDisplayingItemTableList.addAll(listItemTables);
     }
 
+    /**
+     * adding a new list item to the list
+     * @param listItemTable the item to be added
+     */
     public void addNewListItem(ListItemTable listItemTable) {
         int position = mAllListItemTableList.size();
         mAllListItemTableList.add(listItemTable);
@@ -48,12 +56,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         notifyItemInserted(position);
     }
 
+    //notify the fragment that the size of the adapter has changed
     private void notifyAdapterSizeChange() {
         mAdapterCallback.onAdapterItemSizeChange(mAllListItemTableList.size());
     }
 
-    public void removeItem(ListItemTable itemTable) {
+    // remove an item from the list
+    private void removeItem(ListItemTable itemTable) {
         int position = mDisplayingItemTableList.indexOf(itemTable);
+        //notify need to go first before the actual removing from list so the animation
+        //can run correctly
         notifyItemRemoved(position);
         mAllListItemTableList.remove(itemTable);
         mDisplayingItemTableList.remove(position);
@@ -61,21 +73,29 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         notifyAdapterSizeChange();
     }
 
+    /**
+     * remvoe all items from the list
+     */
     public void removeAllItems() {
         mAllListItemTableList.clear();
         mDisplayingItemTableList.clear();
         notifyDataSetChanged();
     }
 
-    public void changeItem(ListItemTable itemTable){
+    // notify the item has been changed
+    private void changeItem(ListItemTable itemTable){
         int position = mDisplayingItemTableList.indexOf(itemTable);
         notifyItemChanged(position);
     }
 
-    public void markAllAsRead() {
+    /**
+     * mark every item as complete
+     */
+    public void markAllAsComplete() {
         DataHelper helper = Utils.getDataHelper();
         for(ListItemTable itemTable : mDisplayingItemTableList) {
             itemTable.setIsComplete(true);
+            //update the data in the database
             helper.createOrUpdateListItem(itemTable);
         }
         notifyDataSetChanged();
@@ -95,6 +115,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         listViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //when the item is clicked, revert its complete state.
                 itemTable.setIsComplete(!itemTable.isComplete());
                 Utils.getDataHelper().createOrUpdateListItem(itemTable);
                 changeItem(itemTable);
@@ -103,6 +124,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         listViewHolder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                //when the item is long-clicked, remove the item
                 removeItem(itemTable);
                 Utils.getDataHelper().removeListItem(itemTable.getId());
                 return true;
@@ -110,9 +132,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         });
 
         if(itemTable.isComplete()) {
+            //when the item is complete, display the check and change the background color
             listViewHolder.textView.setBackgroundResource(R.color.complete);
             listViewHolder.checkImageView.setVisibility(View.VISIBLE);
         }else {
+            //when the item is not complete, hide the check and change back the background color
             listViewHolder.textView.setBackgroundResource(R.color.transparent);
             listViewHolder.checkImageView.setVisibility(View.GONE);
         }
@@ -135,17 +159,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
     }
 
     public void filterComplete() {
+        mDisplayingItemTableList = new ArrayList<>();
         if(!isFiltered) {
-            mDisplayingItemTableList = new ArrayList<>();
             for (ListItemTable itemTable : mAllListItemTableList) {
                 if(!itemTable.isComplete()) {
+                    //only add the incomplete item to the list
                     mDisplayingItemTableList.add(itemTable);
                 }
             }
         }else {
-            mDisplayingItemTableList = new ArrayList<>();
+            //add all items to the list
             mDisplayingItemTableList.addAll(mAllListItemTableList);
         }
+        //revert the isFilter flag
         isFiltered = !isFiltered;
         notifyDataSetChanged();
     }

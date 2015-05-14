@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
+ * The database table storing all the data for the TODOlist item
  * Created by kuanyi on 15/5/14.
  */
 
@@ -18,6 +19,7 @@ public class ListItemTable {
     @DatabaseField
     private String title;
 
+    //whether the task is complete or not
     @DatabaseField
     private boolean isComplete;
 
