@@ -138,7 +138,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         if(!isFiltered) {
             mDisplayingItemTableList = new ArrayList<>();
             for (ListItemTable itemTable : mAllListItemTableList) {
-                if(itemTable.isComplete()) {
+                if(!itemTable.isComplete()) {
                     mDisplayingItemTableList.add(itemTable);
                 }
             }

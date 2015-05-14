@@ -37,6 +37,8 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
 
     private View mHintTextView = null;
 
+    private boolean isFilter = false;
+
     public static ToDoListFragment newInstance() {
         return new ToDoListFragment();
     }
@@ -116,6 +118,13 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
             displayHint();
             return true;
         }else if(id == R.id.action_filter_complete) {
+            //change the icon whe
+            if(isFilter) {
+                item.setIcon(R.drawable.uncheck);
+            }else {
+                item.setIcon(R.drawable.check);
+            }
+            isFilter = !isFilter;
             mListAdapter.filterComplete();
             return true;
         }
