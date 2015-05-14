@@ -1,14 +1,14 @@
 package com.demo.kuanyi.todolist.list;
 
-import android.content.Context;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import com.demo.kuanyi.todolist.R;
+import com.demo.kuanyi.todolist.Utils;
 import com.demo.kuanyi.todolist.model.ListItemTable;
+import com.twotoasters.android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -16,46 +16,79 @@ import java.util.ArrayList;
  * A list adapter that takes in a list of ListItemTable and display it.
  * Created by kuanyi on 15/5/14.
  */
-public class ListAdapter extends BaseAdapter {
+public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     private ArrayList<ListItemTable> mListItemTableList = null;
-    private LayoutInflater mLayoutInflater = null;
 
-    public ListAdapter(Context context, ArrayList<ListItemTable> listItemTables) {
-        mLayoutInflater = LayoutInflater.from(context);
+    private AdapterCallback mAdapterCallback;
+
+
+    public ListAdapter(Fragment fragment, ArrayList<ListItemTable> listItemTables) {
+        try {
+            this.mAdapterCallback = ((AdapterCallback) fragment);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Fragment must implement AdapterCallback.");
+        }
         mListItemTableList = listItemTables;
     }
 
     public void addNewListItem(ListItemTable listItemTable) {
+        int position = mListItemTableList.size();
         mListItemTableList.add(listItemTable);
-        notifyDataSetChanged();
+        //notify the fragment that the size has been changed
+        notifyAdapterSizeChange();
+        notifyItemInserted(position);
     }
 
-    public void removeItem(int position) {
+    private void notifyAdapterSizeChange() {
+        mAdapterCallback.onAdapterItemSizeChange(mListItemTableList.size());
+    }
+
+    public void removeItem(ListItemTable itemTable) {
+        int position = mListItemTableList.indexOf(itemTable);
+        //notify the fragment that the size has been changed
+        notifyAdapterSizeChange();
+        notifyItemRemoved(position);
         mListItemTableList.remove(position);
-        notifyDataSetChanged();
     }
 
-    /**
-     * How many items are in the data set represented by this Adapter.
-     *
-     * @return Count of items.
-     */
-    @Override
-    public int getCount() {
-        return mListItemTableList.size();
+    public void changeItem(ListItemTable itemTable){
+        int position = mListItemTableList.indexOf(itemTable);
+        notifyItemChanged(position);
     }
 
-    /**
-     * Get the data item associated with the specified position in the data set.
-     *
-     * @param position Position of the item whose data we want within the adapter's
-     *                 data set.
-     * @return The data at the specified position.
-     */
     @Override
-    public ListItemTable getItem(int position) {
-        return mListItemTableList.get(position);
+    public ListViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+        View view = inflater.inflate(R.layout.list_item, viewGroup, false);
+        return new ListViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ListViewHolder listViewHolder, final int position) {
+        final ListItemTable itemTable = mListItemTableList.get(position);
+        listViewHolder.textView.setText(itemTable.getTitle());
+        listViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemTable.setIsComplete(!itemTable.isComplete());
+                Utils.getDataHelper().createOrUpdateListItem(itemTable);
+                changeItem(itemTable);
+            }
+        });
+        listViewHolder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                removeItem(itemTable);
+                Utils.getDataHelper().removeListItem(itemTable.getId());
+                return true;
+            }
+        });
+        if(itemTable.isComplete()) {
+            listViewHolder.textView.setBackgroundResource(R.color.complete);
+        }else {
+            listViewHolder.textView.setBackgroundResource(R.color.transparent);
+        }
     }
 
     /**
@@ -69,47 +102,9 @@ public class ListAdapter extends BaseAdapter {
         return 0;
     }
 
-    /**
-     * Get a View that displays the data at the specified position in the data set. You can either
-     * create a View manually or inflate it from an XML layout file. When the View is inflated, the
-     * parent View (GridView, ListView...) will apply default layout parameters unless you use
-     * {@link LayoutInflater#inflate(int, ViewGroup, boolean)}
-     * to specify a root view and to prevent attachment to the root.
-     *
-     * @param position    The position of the item within the adapter's data set of the item whose view
-     *                    we want.
-     * @param convertView The old view to reuse, if possible. Note: You should check that this view
-     *                    is non-null and of an appropriate type before using. If it is not possible to convert
-     *                    this view to display the correct data, this method can create a new view.
-     *                    Heterogeneous lists can specify their number of view types, so that this View is
-     *                    always of the right type (see {@link #getViewTypeCount()} and
-     *                    {@link #getItemViewType(int)}).
-     * @param parent      The parent that this view will eventually be attached to
-     * @return A View corresponding to the data at the specified position.
-     */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ListItemHolder holder;
-        if(convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item, parent, false);
-            holder = new ListItemHolder();
-            holder.title = (TextView) convertView.findViewById(R.id.list_item_textview);
-            convertView.setTag(holder);
-        }else {
-            holder = (ListItemHolder) convertView.getTag();
-        }
-        ListItemTable itemTable = getItem(position);
-        if(itemTable.isComplete()) {
-            holder.title.setBackgroundResource(R.color.complete);
-        }else {
-            holder.title.setBackgroundResource(R.color.transparent);
-        }
-        holder.title.setText(itemTable.getTitle());
-        return convertView;
+    public int getItemCount() {
+        return mListItemTableList.size();
     }
 
-
-    private static class ListItemHolder {
-        TextView title;
-    }
 }

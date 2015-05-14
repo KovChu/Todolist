@@ -5,8 +5,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.demo.kuanyi.todolist.model.DataHelper;
-
 /**
  * The abstract class that contains the share methods of communications and actions
  * for the fragments that extends it
@@ -31,14 +29,6 @@ public abstract class AbstractToDoFragment extends Fragment implements Handler.C
         Activity activity = getActivity();
         if(activity != null && activity instanceof MainActivity) {
             return (MainActivity) activity;
-        }
-        return null;
-    }
-
-    public DataHelper getDataHelper() {
-        MainActivity activity = checkActivity();
-        if(activity != null) {
-            return activity.getDataHelper();
         }
         return null;
     }

@@ -10,14 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.demo.kuanyi.todolist.AbstractToDoFragment;
 import com.demo.kuanyi.todolist.R;
+import com.demo.kuanyi.todolist.Utils;
 import com.demo.kuanyi.todolist.model.ListItemTable;
+import com.twotoasters.android.support.v7.widget.LinearLayoutManager;
+import com.twotoasters.android.support.v7.widget.RecyclerView;
+import com.twotoasters.anim.SlideItemAnimator;
 
 import java.util.ArrayList;
 
@@ -26,12 +28,14 @@ import java.util.ArrayList;
  *
  * A placeholder fragment containing a simple view.
  */
-public class ToDoListFragment extends AbstractToDoFragment {
+public class ToDoListFragment extends AbstractToDoFragment implements AdapterCallback{
 
     private static final int LOAD_LIST_DATA_COMPLETE = 0;
 
-    private ListView mListView = null;
+    private RecyclerView mRecyclerView = null;
     private ListAdapter mListAdapter = null;
+
+    private View mHintTextView = null;
 
     public static ToDoListFragment newInstance() {
         return new ToDoListFragment();
@@ -41,27 +45,11 @@ public class ToDoListFragment extends AbstractToDoFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.fragment_list, container, false);
-        mListView = (ListView) parentView.findViewById(R.id.listview);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //when click, open up the list detail for that item;
-                ListItemTable itemTable = mListAdapter.getItem(position);
-                itemTable.setIsComplete(!itemTable.isComplete());
-                mListAdapter.notifyDataSetChanged();
-
-            }
-        });
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //remove the item when long click
-                ListItemTable itemTable = mListAdapter.getItem(position);
-                getDataHelper().removeListItem(itemTable.getId());
-                mListAdapter.removeItem(position);
-                return true;
-            }
-        });
+        mRecyclerView = (RecyclerView) parentView.findViewById(R.id.recyclerview);
+        mHintTextView = parentView.findViewById(R.id.no_item_hint);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.getRecycledViewPool().clear();
+        mRecyclerView.setItemAnimator(new SlideItemAnimator());
         return parentView;
     }
 
@@ -71,9 +59,9 @@ public class ToDoListFragment extends AbstractToDoFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ArrayList<ListItemTable> existingList = (ArrayList<ListItemTable>) getDataHelper().queryForAllListItems();
+                ArrayList<ListItemTable> existingList = (ArrayList<ListItemTable>) Utils.getDataHelper().queryForAllListItems();
                 if(existingList == null) {
-                    existingList = new ArrayList<ListItemTable>();
+                    existingList = new ArrayList<>();
                 }
                 Message message = new Message();
                 message.what = LOAD_LIST_DATA_COMPLETE;
@@ -113,7 +101,7 @@ public class ToDoListFragment extends AbstractToDoFragment {
                     //create a new list item and display
                     ListItemTable newListItemTable = new ListItemTable();
                     newListItemTable.setTitle(input.getText().toString());
-                    getDataHelper().createOrUpdateListItem(newListItemTable);
+                    Utils.getDataHelper().createOrUpdateListItem(newListItemTable);
                     mListAdapter.addNewListItem(newListItemTable);
                 }
             });
@@ -128,9 +116,29 @@ public class ToDoListFragment extends AbstractToDoFragment {
     public boolean handleMessage(Message msg) {
         if(msg.what == LOAD_LIST_DATA_COMPLETE) {
             ArrayList<ListItemTable> listItemTables = (ArrayList<ListItemTable>) msg.obj;
-            mListAdapter = new ListAdapter(getActivity(), listItemTables);
-            mListView.setAdapter(mListAdapter);
+            onAdapterItemSizeChange(listItemTables.size());
+            mListAdapter = new ListAdapter(this, listItemTables);
+            mRecyclerView.setAdapter(mListAdapter);
         }
         return false;
+    }
+
+    @Override
+    public void onAdapterItemSizeChange(int size) {
+        if(size == 0) {
+            displayHint();
+        }else {
+            dismissHint();
+        }
+    }
+
+    private void displayHint() {
+        mHintTextView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void dismissHint() {
+        mHintTextView.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }
