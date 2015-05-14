@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 /**
  * A list adapter that takes in a list of ListItemTable and display it.
+ * The adapter also holds the data, and does the modifications on the data
  * Created by kuanyi on 15/5/14.
  */
 public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {

@@ -86,9 +86,9 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_add:
+                //create an alert dialog for user to input the text for the TODO item
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                 alertDialog.setTitle(getString(R.string.add_new_list_title));
                 alertDialog.setMessage(getString(R.string.add_new_list_description));
@@ -97,7 +97,7 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 input.setLayoutParams(lp);
-                alertDialog.setView(input); // uncomment this line
+                alertDialog.setView(input);
                 alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -111,24 +111,29 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
                 alertDialog.show();
                 return true;
             case R.id.action_mark_all_as_complete:
+                //notify the adapter to mark all data as complete
                 mListAdapter.markAllAsComplete(true);
                 return true;
             case R.id.action_mark_all_as_incomplete:
+                //notify the adapter to mark all data as incomplete
                 mListAdapter.markAllAsComplete(false);
                 return true;
             case R.id.action_remove_all:
+                //notify the adapter to delete all items
                 mListAdapter.removeAllItems();
+                //also clear all items in the database
                 Utils.getDataHelper().clearAllItem();
                 displayHint();
                 return true;
             case R.id.action_filter:
-                //change the icon whe
-                if(isFilter) {
+                //change the icon by whether the filter is apply or not
+                isFilter = !isFilter;
+                if(!isFilter) {
                     item.setIcon(R.drawable.uncheck);
                 }else {
                     item.setIcon(R.drawable.check);
                 }
-                isFilter = !isFilter;
+                //notify the adapter to filter the data
                 mListAdapter.filterData(true);
                 return true;
         }
