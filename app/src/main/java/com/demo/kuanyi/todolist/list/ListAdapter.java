@@ -46,10 +46,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     public void removeItem(ListItemTable itemTable) {
         int position = mListItemTableList.indexOf(itemTable);
-        //notify the fragment that the size has been changed
-        notifyAdapterSizeChange();
         notifyItemRemoved(position);
         mListItemTableList.remove(position);
+        //notify the fragment that the size has been changed
+        notifyAdapterSizeChange();
     }
 
     public void changeItem(ListItemTable itemTable){

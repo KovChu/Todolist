@@ -19,7 +19,7 @@ import com.demo.kuanyi.todolist.Utils;
 import com.demo.kuanyi.todolist.model.ListItemTable;
 import com.twotoasters.android.support.v7.widget.LinearLayoutManager;
 import com.twotoasters.android.support.v7.widget.RecyclerView;
-import com.twotoasters.anim.SlideItemAnimator;
+import com.twotoasters.anim.GarageDoorItemAnimator;
 
 import java.util.ArrayList;
 
@@ -49,7 +49,7 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
         mHintTextView = parentView.findViewById(R.id.no_item_hint);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.getRecycledViewPool().clear();
-        mRecyclerView.setItemAnimator(new SlideItemAnimator());
+        mRecyclerView.setItemAnimator(new GarageDoorItemAnimator());
         return parentView;
     }
 
@@ -132,9 +132,16 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
         }
     }
 
+    // we need to display hint as a delay due to the remove item animation
     private void displayHint() {
-        mHintTextView.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mHintTextView.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+            }
+        };
+        mHandler.postDelayed(runnable, 500);
     }
 
     private void dismissHint() {
