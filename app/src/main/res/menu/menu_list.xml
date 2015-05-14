@@ -6,12 +6,17 @@
         android:title="@string/action_add"
         app:showAsAction="ifRoom"
         android:orderInCategory="1"/>
+    <item android:id="@+id/action_filter_complete"
+        android:icon="@drawable/check"
+        android:title="@string/action_filter_complete"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="2"/>
     <item android:id="@+id/action_mark_all_as_read"
         android:title="@string/action_mark_all_as_complete"
         app:showAsAction="never"
-        android:orderInCategory="2"/>
+        android:orderInCategory="3"/>
     <item android:id="@+id/action_remove_all"
         android:title="@string/action_remove_all"
         app:showAsAction="never"
-        android:orderInCategory="3"/>
+        android:orderInCategory="4"/>
 </menu>

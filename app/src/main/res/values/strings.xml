@@ -6,6 +6,7 @@
     <string name="add_new_list_description">Please enter the title of the item</string>
 
     <!-- menu items -->
+    <string name="action_filter_complete">Filter</string>
     <string name="action_add">Add</string>
     <string name="action_mark_all_as_complete">Mark All As Complete</string>
     <string name="action_remove_all">Remove All Items</string>

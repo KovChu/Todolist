@@ -19,9 +19,13 @@ import java.util.ArrayList;
  */
 public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
-    private ArrayList<ListItemTable> mListItemTableList = null;
+    private ArrayList<ListItemTable> mAllListItemTableList = null;
+
+    private ArrayList<ListItemTable> mDisplayingItemTableList = null;
 
     private AdapterCallback mAdapterCallback;
+
+    private boolean isFiltered = false;
 
 
     public ListAdapter(Fragment fragment, ArrayList<ListItemTable> listItemTables) {
@@ -30,42 +34,47 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
         } catch (ClassCastException e) {
             throw new ClassCastException("Fragment must implement AdapterCallback.");
         }
-        mListItemTableList = listItemTables;
+        mAllListItemTableList = listItemTables;
+        mDisplayingItemTableList = new ArrayList<>();
+        mDisplayingItemTableList.addAll(listItemTables);
     }
 
     public void addNewListItem(ListItemTable listItemTable) {
-        int position = mListItemTableList.size();
-        mListItemTableList.add(listItemTable);
+        int position = mAllListItemTableList.size();
+        mAllListItemTableList.add(listItemTable);
+        mDisplayingItemTableList.add(listItemTable);
         //notify the fragment that the size has been changed
         notifyAdapterSizeChange();
         notifyItemInserted(position);
     }
 
     private void notifyAdapterSizeChange() {
-        mAdapterCallback.onAdapterItemSizeChange(mListItemTableList.size());
+        mAdapterCallback.onAdapterItemSizeChange(mAllListItemTableList.size());
     }
 
     public void removeItem(ListItemTable itemTable) {
-        int position = mListItemTableList.indexOf(itemTable);
+        int position = mDisplayingItemTableList.indexOf(itemTable);
         notifyItemRemoved(position);
-        mListItemTableList.remove(position);
+        mAllListItemTableList.remove(itemTable);
+        mDisplayingItemTableList.remove(position);
         //notify the fragment that the size has been changed
         notifyAdapterSizeChange();
     }
 
     public void removeAllItems() {
-        mListItemTableList.clear();
+        mAllListItemTableList.clear();
+        mDisplayingItemTableList.clear();
         notifyDataSetChanged();
     }
 
     public void changeItem(ListItemTable itemTable){
-        int position = mListItemTableList.indexOf(itemTable);
+        int position = mDisplayingItemTableList.indexOf(itemTable);
         notifyItemChanged(position);
     }
 
     public void markAllAsRead() {
         DataHelper helper = Utils.getDataHelper();
-        for(ListItemTable itemTable : mListItemTableList) {
+        for(ListItemTable itemTable : mDisplayingItemTableList) {
             itemTable.setIsComplete(true);
             helper.createOrUpdateListItem(itemTable);
         }
@@ -81,7 +90,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     @Override
     public void onBindViewHolder(ListViewHolder listViewHolder, final int position) {
-        final ListItemTable itemTable = mListItemTableList.get(position);
+        final ListItemTable itemTable = mDisplayingItemTableList.get(position);
         listViewHolder.textView.setText(itemTable.getTitle());
         listViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,10 +108,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
                 return true;
             }
         });
+
         if(itemTable.isComplete()) {
             listViewHolder.textView.setBackgroundResource(R.color.complete);
+            listViewHolder.checkImageView.setVisibility(View.VISIBLE);
         }else {
             listViewHolder.textView.setBackgroundResource(R.color.transparent);
+            listViewHolder.checkImageView.setVisibility(View.GONE);
         }
     }
 
@@ -119,7 +131,22 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mListItemTableList.size();
+        return mDisplayingItemTableList.size();
     }
 
+    public void filterComplete() {
+        if(!isFiltered) {
+            mDisplayingItemTableList = new ArrayList<>();
+            for (ListItemTable itemTable : mAllListItemTableList) {
+                if(itemTable.isComplete()) {
+                    mDisplayingItemTableList.add(itemTable);
+                }
+            }
+        }else {
+            mDisplayingItemTableList = new ArrayList<>();
+            mDisplayingItemTableList.addAll(mAllListItemTableList);
+        }
+        isFiltered = !isFiltered;
+        notifyDataSetChanged();
+    }
 }

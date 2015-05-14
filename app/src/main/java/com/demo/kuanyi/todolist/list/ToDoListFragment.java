@@ -115,6 +115,9 @@ public class ToDoListFragment extends AbstractToDoFragment implements AdapterCal
             Utils.getDataHelper().clearAllItem();
             displayHint();
             return true;
+        }else if(id == R.id.action_filter_complete) {
+            mListAdapter.filterComplete();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
